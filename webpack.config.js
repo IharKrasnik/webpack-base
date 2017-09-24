@@ -7,9 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const rootResolve = pathname => path.resolve(__dirname, './src', pathname);
 
 module.exports = {
-  entry: [
-    rootResolve('app.js'),
-  ],
+  entry: ['bootstrap-loader', rootResolve('app.js')],
   output: {
     path: rootResolve('build'),
     publicPath: '/',
@@ -26,34 +24,19 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+    }),
+    new webpack.ProvidePlugin({
+        jQuery: 'jquery'
     })
   ],
   module: {
+    loaders: [
+      { test:/bootstrap-sass[\/\\]assets[\/\\]javascripts[\/\\]/, loader: 'imports-loader?jQuery=jquery' },
+    ],
     rules: [{
       test: /\.js$/,
       loader: 'babel-loader',
       exclude: /node_modules/
-    }, {
-      test: /\.(png|jpg|gif|svg)$/,
-      loader: 'file',
-      query: {
-        name: '[name].[ext]?[hash]',
-      },
-    }, {
-      test: /\.styl$/,
-      use: [
-        'style-loader?sourceMap',
-        'css-loader?sourceMap', {
-          loader: 'stylus-loader',
-          options: {
-            use: [autoprefixer({
-              browsers: ['last 2 versions'],
-              remove: false,
-            })],
-            ident: 'autoprefixer',
-          },
-        },
-      ],
     }, {
       test: /\.(eot|svg|ttf|woff|woff2)$/,
       loader: 'file-loader?name=[name].[ext]',
